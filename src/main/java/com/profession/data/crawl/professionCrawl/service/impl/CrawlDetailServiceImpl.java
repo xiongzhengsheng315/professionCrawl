@@ -18,6 +18,8 @@ import com.profession.data.crawl.professionCrawl.entity.CrawlDetail;
 import com.profession.data.crawl.professionCrawl.mapper.CrawlDetailMapper;
 import com.profession.data.crawl.professionCrawl.service.CrawlDetailService;
 
+import tk.mybatis.mapper.entity.Example;
+
 /**
  * @ClassName: CrawlDetailServiceImpl
  * @Description: 爬虫详情业务接口实现
@@ -45,5 +47,19 @@ public class CrawlDetailServiceImpl implements CrawlDetailService {
 		for (CrawlDetail crawlDetail : crawlDetails) {
 			crawlDetailMapper.insert(crawlDetail);
 		}
+	}
+	
+	/**
+	 * @Title: listCrawlDetails
+	 * @Description: 获取待爬虫的详情数据
+	 * @return List<CrawlDetail> 返回类型
+	 * @throws
+	 */
+	public List<CrawlDetail> listCrawlDetails() {
+		Example example = new Example(CrawlDetail.class);
+		Example.Criteria criteria = example.createCriteria();
+		criteria.andEqualTo("crawl", false);
+		List<CrawlDetail> crawlDetails = crawlDetailMapper.selectByExample(example);
+		return crawlDetails;
 	}
 }

@@ -29,4 +29,12 @@ public interface CrawlDetailService {
 	 * @throws
 	 */
 	public void saveCrawlDetail(List<CrawlDetail> crawlDetails);
+	
+	/**
+	 * @Title: listCrawlDetails
+	 * @Description: 获取待爬虫的详情数据
+	 * @return List<CrawlDetail> 返回类型
+	 * @throws
+	 */
+	public List<CrawlDetail> listCrawlDetails();
 }

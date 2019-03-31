@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.profession.data.crawl.professionCrawl.entity.CrawlProfessionConfig;
+import com.profession.data.crawl.professionCrawl.entity.Work;
 
 /**
  * @ClassName: Job51CrawlHandle
@@ -33,12 +34,10 @@ import com.profession.data.crawl.professionCrawl.entity.CrawlProfessionConfig;
  * @date 2019年3月31日
  *
  */
-@Component
+@Component("job51CrawlHandle")
 public class Job51CrawlHandle extends AbstractCrawlHandle {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
-	
-	
 	
 	/**
 	 * 循环退出表示
@@ -104,6 +103,19 @@ public class Job51CrawlHandle extends AbstractCrawlHandle {
 		return crawlUrls;
 	}
 
+	/**
+	 * @Title: crawlDetailInfo
+	 * @Description: 爬取前程无忧详情信息
+	 * @param detailUrl 爬虫url信息
+	 * @return Work 返回类型
+	 * @throws
+	 */
+	@Override
+	public Work crawlDetailInfo(String detailUrl) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 	/**
 	 * @Title: handleCrawlUrl
 	 * @Description: 获取51job招聘详情页url

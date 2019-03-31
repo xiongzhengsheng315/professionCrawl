@@ -11,6 +11,7 @@ package com.profession.data.crawl.professionCrawl.crawlers;
 import java.util.List;
 
 import com.profession.data.crawl.professionCrawl.entity.CrawlProfessionConfig;
+import com.profession.data.crawl.professionCrawl.entity.Work;
 
 /**
  * @ClassName: AbstractCrawlHandle
@@ -29,4 +30,13 @@ public abstract class AbstractCrawlHandle {
 	 * @throws
 	 */
 	public abstract List<String> getCrawlDetailUrls(List<CrawlProfessionConfig> crawlProfessionConfigs);
+	
+	/**
+	 * @Title: crawlDetailInfo
+	 * @Description: 爬取详情信息
+	 * @param detailUrl 爬虫url信息
+	 * @return Work 返回类型
+	 * @throws
+	 */
+	public abstract Work crawlDetailInfo(String detailUrl);
 }

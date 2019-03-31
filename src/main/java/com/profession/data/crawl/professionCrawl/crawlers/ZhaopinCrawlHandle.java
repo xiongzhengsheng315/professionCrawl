@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
 import com.profession.data.crawl.professionCrawl.entity.CrawlProfessionConfig;
+import com.profession.data.crawl.professionCrawl.entity.Work;
 
 /**
  * @ClassName: ZhaopinCrawlHandle
@@ -33,7 +34,7 @@ import com.profession.data.crawl.professionCrawl.entity.CrawlProfessionConfig;
  * @date 2019年3月29日
  *
  */
-@Component
+@Component("zhaopinCrawlHandle")
 public class ZhaopinCrawlHandle extends AbstractCrawlHandle {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
@@ -102,6 +103,19 @@ public class ZhaopinCrawlHandle extends AbstractCrawlHandle {
 		}
 		return crawlUrls;
 	};
+	
+	/**
+	 * @Title: crawlDetailInfo
+	 * @Description: 爬取智联招聘详情信息
+	 * @param detailUrl 爬虫url信息
+	 * @return Work 返回类型
+	 * @throws
+	 */
+	@Override
+	public Work crawlDetailInfo(String detailUrl) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 	/**
 	 * @Title: handleCrawlUrl
