@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import com.profession.data.crawl.professionCrawl.entity.CrawlDetail;
 import com.profession.data.crawl.professionCrawl.mapper.CrawlDetailMapper;
 import com.profession.data.crawl.professionCrawl.service.CrawlDetailService;
+import com.profession.data.crawl.professionCrawl.util.DateUtil;
 
 import tk.mybatis.mapper.entity.Example;
 
@@ -61,5 +62,21 @@ public class CrawlDetailServiceImpl implements CrawlDetailService {
 		criteria.andEqualTo("crawl", false);
 		List<CrawlDetail> crawlDetails = crawlDetailMapper.selectByExample(example);
 		return crawlDetails;
+	}
+	
+	/**
+	 * @Title: updateCrawlDetail
+	 * @Description: 更新爬虫详情状态
+	 * @param id 主键
+	 * @return boolean 返回类型
+	 * @throws
+	 */
+	public boolean updateCrawlDetail(Long id) {
+		CrawlDetail param = new CrawlDetail();
+		param.setId(id);
+		param.setCrawl(true);
+		param.setUpdateTime(DateUtil.getNow());
+		int record = crawlDetailMapper.updateByPrimaryKeySelective(param);
+		return record > 0;
 	}
 }

@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.Id;
 
 /**
  * @ClassName: CrawlDetail
@@ -27,6 +28,13 @@ public class CrawlDetail implements Serializable {
 	 */
 	private static final long serialVersionUID = 1368072303133215405L;
 
+	/**
+	 * 爬虫id
+	 */
+	@Id
+	@Column(name = "id")
+	private Long id;
+	
 	/**
 	 * 爬虫url
 	 */
@@ -61,6 +69,14 @@ public class CrawlDetail implements Serializable {
 	 */
 	@Column(name = "version")
 	private Integer version;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public String getCrawlUrl() {
 		return crawlUrl;

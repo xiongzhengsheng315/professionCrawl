@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
@@ -29,6 +30,13 @@ public class Work implements Serializable {
 	 */
 	private static final long serialVersionUID = 5121911158412440740L;
 
+	/**
+	 * 爬虫id
+	 */
+	@Id
+	@Column(name = "id")
+	private Long id;
+	
 	/**
 	 * 岗位名称
 	 */
@@ -148,6 +156,14 @@ public class Work implements Serializable {
 	 */
 	@Column(name = "version")
 	private Integer version;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public String getJobName() {
 		return jobName;

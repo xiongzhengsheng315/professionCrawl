@@ -113,8 +113,8 @@ public class ZhaopinCrawlHandle extends AbstractCrawlHandle {
 	 */
 	@Override
 	public Work crawlDetailInfo(String detailUrl) {
-		// TODO Auto-generated method stub
-		return null;
+		Work work = new Work();
+		return work;
 	}
 	
 	/**

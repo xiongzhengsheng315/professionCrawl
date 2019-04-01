@@ -37,4 +37,13 @@ public interface CrawlDetailService {
 	 * @throws
 	 */
 	public List<CrawlDetail> listCrawlDetails();
+	
+	/**
+	 * @Title: updateCrawlDetail
+	 * @Description: 更新爬虫详情状态
+	 * @param id 主键
+	 * @return boolean 返回类型
+	 * @throws
+	 */
+	public boolean updateCrawlDetail(Long id);
 }

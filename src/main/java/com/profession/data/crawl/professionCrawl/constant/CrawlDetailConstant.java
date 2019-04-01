@@ -8,6 +8,11 @@
  */
 package com.profession.data.crawl.professionCrawl.constant;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.context.expression.MapAccessor;
+
 /**
  * @ClassName: CrawlDetailConstant
  * @Description: 爬虫详情业务常量
@@ -25,17 +30,20 @@ public class CrawlDetailConstant {
 	 *
 	 */
 	public enum CrawlType{
-		ZHILIAN("智联", 1),
-		QIANCHENG("前程无忧", 2),
-		DAJIE("大街网", 3);
+		ZHILIAN("智联", 1, "zhaopinCrawlHandle"),
+		QIANCHENG("前程无忧", 2, "job51CrawlHandle"),
+		DAJIE("大街网", 3, "dajieCrawlHandle");
 		
 		private String desc;
 		
 		private Integer type;
+		
+		private String handleBeanName;
 
-		private CrawlType(String desc, Integer type) {
+		private CrawlType(String desc, Integer type, String handleBeanName) {
 			this.desc = desc;
 			this.type = type;
+			this.handleBeanName = handleBeanName;
 		}
 
 		public String getDesc() {
@@ -44,6 +52,24 @@ public class CrawlDetailConstant {
 
 		public Integer getType() {
 			return type;
+		}
+
+		public String getHandleBeanName() {
+			return handleBeanName;
+		}
+		
+		/**
+		 * @Title: getHandleBeanNames
+		 * @Description: 加载handlebean集合
+		 * @return Map<Integer,String> 返回类型
+		 * @throws
+		 */
+		public static Map<Integer, String> getHandleBeanNames(){
+			Map<Integer, String> map = new HashMap<>();
+			for (CrawlType type : CrawlType.values()) {
+				map.put(type.getType(), type.getHandleBeanName());
+			}
+			return map;
 		}
 	}
 }
