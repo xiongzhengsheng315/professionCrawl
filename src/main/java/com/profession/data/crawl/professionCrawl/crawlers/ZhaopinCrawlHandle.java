@@ -10,6 +10,7 @@ package com.profession.data.crawl.professionCrawl.crawlers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,13 +20,19 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
+import com.profession.data.crawl.professionCrawl.entity.Area;
 import com.profession.data.crawl.professionCrawl.entity.CrawlProfessionConfig;
 import com.profession.data.crawl.professionCrawl.entity.Work;
+import com.profession.data.crawl.professionCrawl.service.AreaService;
+import com.profession.data.crawl.professionCrawl.util.DateUtil;
 
 /**
  * @ClassName: ZhaopinCrawlHandle
@@ -45,6 +52,9 @@ public class ZhaopinCrawlHandle extends AbstractCrawlHandle {
 	private volatile Boolean loop_flag = true;
 	
 	private final int PAGE_SIZE = 90;
+	
+	@Autowired
+	private AreaService areaService;
 	
 	/**
 	 * @Title: getCrawlDetailUrls
@@ -113,10 +123,21 @@ public class ZhaopinCrawlHandle extends AbstractCrawlHandle {
 	 */
 	@Override
 	public Work crawlDetailInfo(String detailUrl) {
+		if(StringUtils.isBlank(detailUrl)){
+			logger.info("爬虫url:{}信息为空!", detailUrl);
+			return null;
+		}
 		Work work = new Work();
+		try {
+			Document document = Jsoup.connect(detailUrl).ignoreContentType(true).get();
+			Element element = document.body();
+			parsePageInfo(element, work);
+		} catch (IOException e) {
+			logger.error("爬虫详情数据抓取失败!", e);
+		}
 		return work;
 	}
-	
+
 	/**
 	 * @Title: handleCrawlUrl
 	 * @Description: 获取智联招聘详情页url
@@ -152,4 +173,89 @@ public class ZhaopinCrawlHandle extends AbstractCrawlHandle {
 		}
 		return crawlDetailUrls;
 	}
+    
+    /**
+     * @Title: parsePageInfo
+     * @Description: 解析页面内容
+     * @param element 页面对象
+     * @param work 参数
+     * @return void 返回类型
+     * @throws
+     */
+    private void parsePageInfo(Element element, Work work) {
+    	Element rootElement = element.getElementById("root");
+    	try {
+			String jobName = rootElement.getElementsByClass("summary-plane__title").get(0).text();
+			String salary = rootElement.getElementsByClass("summary-plane__salary").get(0).text();
+			Elements elements = rootElement.getElementsByClass("highlights__content-item");
+			List<String> highlights = new ArrayList<>();
+			if(elements != null && elements.size() > 0) {
+				for (Element highlight : elements) {
+					highlights.add(highlight.text());
+				}
+			}
+			Elements jobElements = rootElement.getElementsByClass("describtion__detail-content");
+			List<String> jobDutys = new ArrayList<>();
+			for (Element jobElement : jobElements) {
+				jobDutys.add(jobElement.text());
+			}
+			String workPlace = rootElement.getElementsByClass("job-address__content-text").get(0).text();
+			String companyName = rootElement.getElementsByClass("company__title").get(0).text();
+			List<Element> planeInfoElements = rootElement.getElementsByClass("summary-plane__info").get(0).getElementsByTag("li");
+			//
+			String cityName = planeInfoElements.get(0).getElementsByTag("a").get(0).text();
+			Area cityArea = areaService.getArea(cityName);
+			Long cityId = 0L;
+			if(cityArea != null) {
+				cityId = cityArea.getId();
+				work.setCityId(cityId);
+			}
+			String regionName = planeInfoElements.get(0).getElementsByTag("span").get(0).text();
+			Area regionArea = areaService.getArea(cityId, regionName);
+			if(regionArea != null) {
+				work.setRegionId(regionArea.getId());
+			}
+			//
+			String academicRequire = planeInfoElements.get(2).text();
+			
+			work.setJobName(jobName);
+			work.setSalary(salary);
+			work.setWorkPlace(workPlace);
+			work.setCompanyName(companyName);
+			work.setAcademicRequire(academicRequire);
+			//处理公司信息
+			String conpanyIntroUrl = rootElement.getElementsByClass("company__page-site").get(0).attr("href");
+			handleCompanyInfo(conpanyIntroUrl, work);
+			//
+			Date now = DateUtil.getNow();
+			work.setCreateTime(now);
+			work.setUpdateTime(now);
+			work.setVersion(0);
+		} catch (IOException e) {
+			logger.error("收集智联详情数据异常!", e);
+		}
+	}
+
+    /**
+     * @Title: handleCompanyInfo
+     * @Description: 获取公司详情
+     * @param conpanyIntroUrl 公司介绍url信息
+     * @param work
+     * @param @return 参数
+     * @throws IOException 
+     * @return void 返回类型
+     * @throws
+     */
+	private void handleCompanyInfo(String conpanyIntroUrl, Work work) throws IOException {
+		Document document = Jsoup.connect(conpanyIntroUrl).ignoreContentType(true).get();
+		Element element = document.body();
+		String companyNature = element.getElementsByClass("overview__detail").get(0).getElementsByTag("div").get(0).text();
+		work.setCompanyNature(companyNature);
+		String companyWebsite = element.getElementsByClass("overview__url").get(0).text();
+		work.setCompanyWebsite(companyWebsite);
+		String companyIntroduce = element.getElementsByClass("company-show__content__description").get(0).text();
+		work.setCompanyIntroduce(companyIntroduce);
+	}
+    
+    
 }

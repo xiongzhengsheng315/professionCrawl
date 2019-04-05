@@ -38,6 +38,12 @@ public class Work implements Serializable {
 	private Long id;
 	
 	/**
+	 * 爬虫id
+	 */
+	@Column(name = "crawl_id")
+	private Long crawlId;
+	
+	/**
 	 * 岗位名称
 	 */
 	@Column(name = "job_name")
@@ -90,6 +96,18 @@ public class Work implements Serializable {
 	 */
 	@Column(name = "work_place")
 	private String workPlace;
+	
+	/**
+	 * 城市id
+	 */
+	@Column(name = "city_id")
+	private Long cityId;
+	
+	/**
+	 * 区域id
+	 */
+	@Column(name = "region_id")
+	private Long regionId;
 	
 	/**
 	 * 公司名称
@@ -165,6 +183,14 @@ public class Work implements Serializable {
 		this.id = id;
 	}
 
+	public Long getCrawlId() {
+		return crawlId;
+	}
+
+	public void setCrawlId(Long crawlId) {
+		this.crawlId = crawlId;
+	}
+
 	public String getJobName() {
 		return jobName;
 	}
@@ -235,6 +261,22 @@ public class Work implements Serializable {
 
 	public void setWorkPlace(String workPlace) {
 		this.workPlace = workPlace;
+	}
+
+	public Long getCityId() {
+		return cityId;
+	}
+
+	public void setCityId(Long cityId) {
+		this.cityId = cityId;
+	}
+
+	public Long getRegionId() {
+		return regionId;
+	}
+
+	public void setRegionId(Long regionId) {
+		this.regionId = regionId;
 	}
 
 	public String getCompanyName() {

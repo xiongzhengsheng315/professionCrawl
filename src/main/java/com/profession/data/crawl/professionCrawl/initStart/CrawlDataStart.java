@@ -75,6 +75,7 @@ public class CrawlDataStart implements CommandLineRunner {
 					logger.error("爬虫处理的类为null!");
 				}
 				Work work = crawlHandle.crawlDetailInfo(crawlDetail.getCrawlUrl());
+				work.setCrawlId(crawlDetail.getId());
 				workService.saveWork(work);
 				//变更爬虫详情记录
 				crawlDetailService.updateCrawlDetail(crawlDetail.getId());
