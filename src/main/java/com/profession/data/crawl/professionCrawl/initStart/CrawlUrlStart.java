@@ -83,9 +83,9 @@ public class CrawlUrlStart implements CommandLineRunner {
 		logger.info("待爬取的数据:{}", JSON.toJSONString(crawlProfessionConfigs));
 		//变更爬虫配置状态为已完成
 		crawlProfessionConfigService.updateCrawlProfessionConfig(crawlProfessionConfigs, CrawlProfessionConfigConstant.CrawlStatus.PEND.getStatus());
-		//处理智联
+//		//处理智联
 //		this.handleZhilian(crawlProfessionConfigs);
-		//处理前程无忧
+//		//处理前程无忧
 //		this.handle51Job(crawlProfessionConfigs);
 //		//处理大街网
 //		this.handleDaJie(crawlProfessionConfigs);

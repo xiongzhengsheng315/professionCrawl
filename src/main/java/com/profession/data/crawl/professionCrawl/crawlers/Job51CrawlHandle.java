@@ -10,12 +10,14 @@ package com.profession.data.crawl.professionCrawl.crawlers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -26,6 +28,7 @@ import org.springframework.stereotype.Component;
 
 import com.profession.data.crawl.professionCrawl.entity.CrawlProfessionConfig;
 import com.profession.data.crawl.professionCrawl.entity.Work;
+import com.profession.data.crawl.professionCrawl.util.DateUtil;
 
 /**
  * @ClassName: Job51CrawlHandle
@@ -112,7 +115,18 @@ public class Job51CrawlHandle extends AbstractCrawlHandle {
 	 */
 	@Override
 	public Work crawlDetailInfo(String detailUrl) {
+		if(StringUtils.isBlank(detailUrl)) {
+			logger.info("爬虫url:{}为空!", detailUrl);
+			return null;
+		}
 		Work work = new Work();
+		try {
+			Document document = Jsoup.connect(detailUrl).ignoreContentType(true).get();
+			Element element = document.body();
+			parsePageInfo(element, work);
+		} catch (IOException e) {
+			logger.error("爬虫详情数据抓取失败!", e);
+		}
 		return work;
 	}
 	
@@ -139,4 +153,31 @@ public class Job51CrawlHandle extends AbstractCrawlHandle {
     	}
 		return crawlDetailUrls;
 	}
+    
+    /**
+     * @Title: parsePageInfo
+     * @Description: 解析页面内容
+     * @param element 页面对象
+     * @param work 参数
+     * @return void 返回类型
+     * @throws
+     */
+    private void parsePageInfo(Element element, Work work) {
+    	//
+    	Element headerElement = element.getElementsByClass("tHeader").get(0);
+    	String jobName = headerElement.getElementsByTag("h1").get(0).text();
+    	String salary = headerElement.getElementsByTag("strong").get(0).text();
+    	//取城市信息和经验要求
+    	String info = headerElement.getElementsByClass("msg ltype").get(0).text();
+    	if(StringUtils.isNotBlank(info)) {
+    		info = info.replaceAll("&nbsp;", "").replaceAll(" ", "");
+    		String[] infoArr = info.split("\\|");
+    		
+    	}
+    	
+    	Date now = DateUtil.getNow();
+    	work.setCreateTime(now);
+    	work.setUpdateTime(now);
+    	work.setVersion(0);
+    }
 }
