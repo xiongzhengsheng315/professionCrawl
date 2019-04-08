@@ -1,12 +1,12 @@
 /**
- * @Title: InitStart.java
- * @Package com.profession.data.crawl.professionCrawl.CrawlUrlStart
- * @Description: 爬虫详情url启动类
+ * @Title: CrawlUrl.java
+ * @Package com.profession.data.crawl.professionCrawl.CrawlUrl
+ * @Description: 爬虫详情url
  * @author 熊正胜
  * @date 2019年3月24日
  * @version V1.0
  */
-package com.profession.data.crawl.professionCrawl.initStart;
+package com.profession.data.crawl.professionCrawl.component;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,8 +16,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
@@ -33,15 +31,14 @@ import com.profession.data.crawl.professionCrawl.service.CrawlProfessionConfigSe
 import com.profession.data.crawl.professionCrawl.util.DateUtil;
 
 /**
- * @ClassName: CrawlUrlStart
- * @Description: 爬虫详情url启动类
+ * @ClassName: CrawlUrl
+ * @Description: 爬虫详情url
  * @author 熊正胜
  * @date 2019年3月24日
  *
  */
 @Component
-@Order(1)
-public class CrawlUrlStart implements CommandLineRunner {
+public class CrawlUrl {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -59,14 +56,6 @@ public class CrawlUrlStart implements CommandLineRunner {
 	
 	@Autowired
 	private DajieCrawlHandle dajieCrawlHandle;
-	
-	@Override
-	public void run(String... args) throws Exception {
-		while (true) {
-			this.work();
-		}
-		
-	}
 
 	/**
 	 * @Title: work
@@ -74,7 +63,7 @@ public class CrawlUrlStart implements CommandLineRunner {
 	 * @return void 返回类型
 	 * @throws
 	 */
-	private void work(){
+	public void work(){
 		List<CrawlProfessionConfig> crawlProfessionConfigs = crawlProfessionConfigService.
 				listCrawlProfessionConfigs(CrawlProfessionConfigConstant.CrawlStatus.PEND.getStatus());
 		if(CollectionUtils.isEmpty(crawlProfessionConfigs)){
@@ -83,10 +72,10 @@ public class CrawlUrlStart implements CommandLineRunner {
 		logger.info("待爬取的数据:{}", JSON.toJSONString(crawlProfessionConfigs));
 		//变更爬虫配置状态为已完成
 		crawlProfessionConfigService.updateCrawlProfessionConfig(crawlProfessionConfigs, CrawlProfessionConfigConstant.CrawlStatus.PEND.getStatus());
-//		//处理智联
-//		this.handleZhilian(crawlProfessionConfigs);
-//		//处理前程无忧
-//		this.handle51Job(crawlProfessionConfigs);
+		//处理智联
+		this.handleZhilian(crawlProfessionConfigs);
+		//处理前程无忧
+		this.handle51Job(crawlProfessionConfigs);
 //		//处理大街网
 //		this.handleDaJie(crawlProfessionConfigs);
 		logger.info("爬虫url信息抓取完毕!");

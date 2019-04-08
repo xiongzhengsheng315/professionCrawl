@@ -24,10 +24,13 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.profession.data.crawl.professionCrawl.entity.Area;
 import com.profession.data.crawl.professionCrawl.entity.CrawlProfessionConfig;
 import com.profession.data.crawl.professionCrawl.entity.Work;
+import com.profession.data.crawl.professionCrawl.service.AreaService;
 import com.profession.data.crawl.professionCrawl.util.DateUtil;
 
 /**
@@ -46,6 +49,9 @@ public class Job51CrawlHandle extends AbstractCrawlHandle {
 	 * 循环退出表示
 	 */
 	private volatile Boolean loop_flag = true;
+	
+	@Autowired
+	private AreaService areaService;
 	
 	/**
 	 * @Title: getCrawlDetailUrls
@@ -155,6 +161,7 @@ public class Job51CrawlHandle extends AbstractCrawlHandle {
 	}
     
     /**
+     * @param academicRequire 
      * @Title: parsePageInfo
      * @Description: 解析页面内容
      * @param element 页面对象
@@ -163,21 +170,113 @@ public class Job51CrawlHandle extends AbstractCrawlHandle {
      * @throws
      */
     private void parsePageInfo(Element element, Work work) {
-    	//
-    	Element headerElement = element.getElementsByClass("tHeader").get(0);
-    	String jobName = headerElement.getElementsByTag("h1").get(0).text();
-    	String salary = headerElement.getElementsByTag("strong").get(0).text();
-    	//取城市信息和经验要求
-    	String info = headerElement.getElementsByClass("msg ltype").get(0).text();
-    	if(StringUtils.isNotBlank(info)) {
-    		info = info.replaceAll("&nbsp;", "").replaceAll(" ", "");
-    		String[] infoArr = info.split("\\|");
-    		
-    	}
-    	
+    	try {
+			//
+			Element headerElement = element.getElementsByClass("tHeader").get(0);
+			String jobName = headerElement.getElementsByTag("h1").get(0).text();
+			String salary = headerElement.getElementsByTag("strong").get(0).text();
+			//取城市信息和经验要求
+			String info = headerElement.getElementsByClass("msg ltype").get(0).text();
+			long cityId = 0;
+			long regionId = 0;
+			String jobRequeire = null;
+			String academicRequire = null;
+			if(StringUtils.isNotBlank(info)) {
+				info = info.replaceAll("&nbsp;", "").replaceAll(" ", "");
+				String[] infoArr = info.split("\\|");
+				String area = infoArr[0];
+				String[] areaInfo = area.split("-");
+				if(areaInfo.length == 2) {
+					Area cityArea = areaService.getArea(areaInfo[0]);
+					if(cityArea != null) {
+						cityId = cityArea.getId();
+					}
+					String regionName = areaInfo[1];
+					Area regionArea = areaService.getArea(cityId, regionName);
+					if(regionArea != null) {
+						regionId = regionArea.getId();
+					}
+				} else {
+					Area cityArea = areaService.getArea(areaInfo[0]);
+					if(cityArea != null) {
+						cityId = cityArea.getId();
+					}
+				}
+				jobRequeire = infoArr[1];
+				academicRequire = infoArr[2];
+			}
+			List<String> jobBrightSpots = new ArrayList<>();
+			Elements jobBrightSpotElements = element.getElementsByClass("jtag").get(0).getElementsByTag("span");
+			for (Element ele : jobBrightSpotElements) {
+				jobBrightSpots.add(ele.text());
+			}
+			Elements jobRequeireElements = element.getElementsByClass("job_msg").get(0).getElementsByTag("p");
+			List<String> jobRequeires = new ArrayList<>();
+			for (Element ele : jobRequeireElements) {
+				jobRequeires.add(ele.text());
+			}
+			String workPlace = element.getElementsByClass("fp").get(0).text();
+			if(StringUtils.isNotBlank(workPlace)){
+				workPlace = workPlace.replaceAll("上班地址：", "");
+			}
+			String companyIntroduce = null;
+			Elements companyElments = element.getElementsByClass("tBorderTop_box");
+			if(companyElments != null && companyElments.size() > 3) {
+				companyIntroduce = companyElments.get(2).getElementsByTag("div").get(0).text();
+			}
+			
+			String companyName = element.getElementsByClass("com_msg").get(0).getElementsByTag("p").get(0).text();
+			String companyNature = element.getElementsByClass("com_tag").get(0).getElementsByTag("p").get(0).text();
+			String conpanyIntroUrl = element.getElementsByClass("com_msg").get(0).getElementsByTag("a").attr("href");
+			handleCompanyInfo(conpanyIntroUrl, work);
+			
+			work.setCityId(cityId);
+			work.setRegionId(regionId);
+			work.setJobName(jobName);
+			work.setSalary(salary);
+			work.setJobRequeire(jobRequeire);
+			work.setAcademicRequire(academicRequire);
+			work.setJobBrightSpot(StringUtils.join(jobBrightSpots, ","));
+			work.setJobRequeire(StringUtils.join(jobRequeires, ","));
+			work.setWorkPlace(workPlace);
+			work.setCompanyIntroduce(companyIntroduce);
+			work.setCompanyName(companyName);
+			work.setCompanyNature(companyNature);
+		} catch (IOException e) {
+			logger.error("收集前程无忧详情数据异常!", e);
+		}
     	Date now = DateUtil.getNow();
     	work.setCreateTime(now);
     	work.setUpdateTime(now);
     	work.setVersion(0);
     }
+    
+    /**
+     * @Title: handleCompanyInfo
+     * @Description: 获取公司详情
+     * @param conpanyIntroUrl 公司介绍url信息
+     * @param work
+     * @param @return 参数
+     * @throws IOException 
+     * @return void 返回类型
+     * @throws
+     */
+	private void handleCompanyInfo(String conpanyIntroUrl, Work work) throws IOException {
+		Document document = Jsoup.connect(conpanyIntroUrl).ignoreContentType(true).get();
+		Element element = document.body();
+		String companyAddress = element.getElementsByClass("fp").get(0).text();
+		if(StringUtils.isNotBlank(companyAddress)) {
+			companyAddress = companyAddress.replace("公司地址：", "");
+		}
+		work.setCompanyAddress(companyAddress);
+		Elements webSites = element.getElementsByClass("fp");
+		if(webSites != null && webSites.size() > 1) {
+			String companyWebsite = webSites.get(1).text();
+			if(StringUtils.isNotBlank(companyWebsite)) {
+				companyWebsite = companyWebsite.replace("公司官网：", "");
+			}
+			work.setCompanyWebsite(companyWebsite);
+		}
+		
+	}
 }

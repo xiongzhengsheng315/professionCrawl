@@ -210,20 +210,28 @@ public class ZhaopinCrawlHandle extends AbstractCrawlHandle {
 				cityId = cityArea.getId();
 				work.setCityId(cityId);
 			}
-			String regionName = planeInfoElements.get(0).getElementsByTag("span").get(0).text();
-			Area regionArea = areaService.getArea(cityId, regionName);
-			if(regionArea != null) {
-				work.setRegionId(regionArea.getId());
+			Elements regionElements = planeInfoElements.get(0).getElementsByTag("span");
+			if(regionElements != null && regionElements.size() > 0) {
+				String regionName = regionElements.get(0).text();
+				Area regionArea = areaService.getArea(cityId, regionName);
+				if(regionArea != null) {
+					work.setRegionId(regionArea.getId());
+				}
 			}
 			//
 			String academicRequire = planeInfoElements.get(2).text();
 			
 			work.setJobName(jobName);
+			work.setJobRequeire(StringUtils.join(jobDutys, ""));
+			work.setJobBrightSpot(StringUtils.join(highlights, ""));
 			work.setSalary(salary);
 			work.setWorkPlace(workPlace);
 			work.setCompanyName(companyName);
+			work.setCompanyAddress(workPlace);
 			work.setAcademicRequire(academicRequire);
 			//处理公司信息
+			String companyUrl = element.getElementsByClass("company__home-page").get(0).text();
+			work.setCompanyWebsite(companyUrl);
 			String conpanyIntroUrl = rootElement.getElementsByClass("company__page-site").get(0).attr("href");
 			handleCompanyInfo(conpanyIntroUrl, work);
 			//
@@ -231,7 +239,7 @@ public class ZhaopinCrawlHandle extends AbstractCrawlHandle {
 			work.setCreateTime(now);
 			work.setUpdateTime(now);
 			work.setVersion(0);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			logger.error("收集智联详情数据异常!", e);
 		}
 	}
@@ -246,15 +254,18 @@ public class ZhaopinCrawlHandle extends AbstractCrawlHandle {
      * @return void 返回类型
      * @throws
      */
-	private void handleCompanyInfo(String conpanyIntroUrl, Work work) throws IOException {
-		Document document = Jsoup.connect(conpanyIntroUrl).ignoreContentType(true).get();
-		Element element = document.body();
-		String companyNature = element.getElementsByClass("overview__detail").get(0).getElementsByTag("div").get(0).text();
-		work.setCompanyNature(companyNature);
-		String companyWebsite = element.getElementsByClass("overview__url").get(0).text();
-		work.setCompanyWebsite(companyWebsite);
-		String companyIntroduce = element.getElementsByClass("company-show__content__description").get(0).text();
-		work.setCompanyIntroduce(companyIntroduce);
+	private void handleCompanyInfo(String conpanyIntroUrl, Work work) {
+		try {
+			Document document = Jsoup.connect(conpanyIntroUrl).ignoreContentType(true).get();
+			Element element = document.body();
+			String companyNature = element.getElementsByClass("overview__detail").get(0).getElementsByTag("span").get(0).text();
+			work.setCompanyNature(companyNature);
+			String companyWebsite = element.getElementsByClass("overview__url").get(0).text();
+			work.setCompanyWebsite(companyWebsite);
+			String companyIntroduce = element.getElementsByClass("company-show__content__description").get(0).text();
+			work.setCompanyIntroduce(companyIntroduce);
+		} catch (Exception e) {
+		}
 	}
     
     

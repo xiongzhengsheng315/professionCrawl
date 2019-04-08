@@ -11,6 +11,7 @@ package com.profession.data.crawl.professionCrawl.util;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 
 /**
  * @ClassName: ApplicationContextUtil
@@ -19,6 +20,7 @@ import org.springframework.context.ApplicationContextAware;
  * @date 2019年4月1日
  *
  */
+@Component
 public class ApplicationContextUtil implements ApplicationContextAware {
 
 	public static ApplicationContext applicationContext;
