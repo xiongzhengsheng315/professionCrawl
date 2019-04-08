@@ -158,6 +158,12 @@ public class Work implements Serializable {
 	private String knowledgePoint;
 	
 	/**
+	 * 状态  0:待审核;1:已审核;2:审核失败;
+	 */
+	@Column(name = "status")
+	private Integer status;
+	
+	/**
 	 * 创建时间
 	 */
 	@Column(name = "create_time")
@@ -341,6 +347,14 @@ public class Work implements Serializable {
 
 	public void setKnowledgePoint(String knowledgePoint) {
 		this.knowledgePoint = knowledgePoint;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
 	}
 
 	public Date getCreateTime() {
