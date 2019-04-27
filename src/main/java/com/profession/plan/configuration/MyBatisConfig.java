@@ -47,7 +47,7 @@ public class MyBatisConfig {
 	
     private static final Logger log = LoggerFactory.getLogger(MyBatisConfig.class);
 
-    private String typeAliasesPackage = "com/profession/data/crawl/professionCrawl/entity";
+    private String typeAliasesPackage = "com/profession/plan/entity";
     private String mapperLocations = "classpath*:mapper/*.xml";
 
     @Bean
