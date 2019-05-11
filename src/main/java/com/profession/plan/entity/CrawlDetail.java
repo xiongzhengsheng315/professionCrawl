@@ -52,6 +52,7 @@ public class CrawlDetail implements Serializable {
 	 */
 	@Column(name = "is_crawl")
 	private Boolean crawl;
+	
 	/**
 	 * 创建时间
 	 */
