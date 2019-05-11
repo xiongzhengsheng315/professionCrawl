@@ -13,6 +13,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * @ClassName: Category
@@ -21,6 +22,7 @@ import javax.persistence.Id;
  * @date 2019年5月3日
  *
  */
+@Table(name = "category")
 public class Category implements Serializable {
 
 	/**
@@ -54,6 +56,12 @@ public class Category implements Serializable {
 	private Long fid;
 	
 	/**
+	 * 启用状态
+	 */
+	@Column(name = "enable")
+	private Boolean enable;
+	
+	/**
 	 * 创建时间
 	 */
 	@Column(name = "create_time")
@@ -70,4 +78,68 @@ public class Category implements Serializable {
 	 */
 	@Column(name = "version")
 	private Integer version;
+
+	public Long getId() {
+		return Id;
+	}
+
+	public void setId(Long id) {
+		Id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Integer getLevel() {
+		return level;
+	}
+
+	public void setLevel(Integer level) {
+		this.level = level;
+	}
+
+	public Long getFid() {
+		return fid;
+	}
+
+	public void setFid(Long fid) {
+		this.fid = fid;
+	}
+
+	public Boolean getEnable() {
+		return enable;
+	}
+
+	public void setEnable(Boolean enable) {
+		this.enable = enable;
+	}
+
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+	public Date getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(Date updateTime) {
+		this.updateTime = updateTime;
+	}
+
+	public Integer getVersion() {
+		return version;
+	}
+
+	public void setVersion(Integer version) {
+		this.version = version;
+	}
 }
