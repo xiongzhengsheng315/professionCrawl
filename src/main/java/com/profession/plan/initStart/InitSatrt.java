@@ -80,11 +80,11 @@ public class InitSatrt implements CommandLineRunner {
 			categoryService.batchSaveCategory(categorys);
 		}
 		
-//		while (true) {
-//			crawlUrl.work();
-//			
-//			crawlData.work();
-//		}
+		while (true) {
+			crawlUrl.work();
+			
+			crawlData.work();
+		}
 	}
 
 }
