@@ -11,6 +11,8 @@ package com.profession.plan.initStart;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -81,9 +83,22 @@ public class InitSatrt implements CommandLineRunner {
 		}
 		
 		while (true) {
-			crawlUrl.work();
+			ExecutorService threadPool = Executors.newFixedThreadPool(2);
 			
-			crawlData.work();
+			threadPool.submit(new Runnable() {
+				@Override
+				public void run() {
+					crawlUrl.work();
+				}
+			});
+			
+			threadPool.submit(new Runnable() {
+				@Override
+				public void run() {
+					crawlData.work();
+				}
+			});
+			threadPool.shutdown();
 		}
 	}
 
