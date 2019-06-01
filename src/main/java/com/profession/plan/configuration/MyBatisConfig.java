@@ -1,5 +1,6 @@
 package com.profession.plan.configuration;
 
+import java.sql.SQLException;
 import java.util.Properties;
 
 import javax.sql.DataSource;
@@ -64,6 +65,14 @@ public class MyBatisConfig {
         datasource.setUsername(username);
         datasource.setPassword(password);  
         datasource.setDriverClassName(driverClassName);
+        datasource.setInitialSize(50);
+        datasource.setMaxActive(100);
+        try {
+			datasource.setFilters("stat,wall");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return datasource;
 	}
 
